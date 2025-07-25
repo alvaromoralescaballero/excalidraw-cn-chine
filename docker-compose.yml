@@ -8,8 +8,9 @@ services:
         - NODE_ENV=development
     container_name: excalidraw
     ports:
-      - "3000:80"
-    restart: on-failure
+      - "1010:80"
+    # 🚀 CLAVE: Cambiar restart policy
+    restart: unless-stopped  # Se inicia automáticamente al boot
     stdin_open: true
     healthcheck:
       disable: true
