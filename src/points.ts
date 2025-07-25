@@ -9,7 +9,7 @@ export const getSizeFromPoints = (points: readonly Point[]) => {
   };
 };
 
-/** @arg dimension, 0 for rescaling only x, 1 for y */
+/** @arg dimensión, 0 para reescalar solo x, 1 para y */
 export const rescalePoints = (
   dimension: 0 | 1,
   newSize: number,
@@ -39,7 +39,7 @@ export const rescalePoints = (
   }
 
   if (scaledPoints.length === 2) {
-    // we don't translate two-point lines
+    // no trasladamos líneas de dos puntos
     return scaledPoints;
   }
 

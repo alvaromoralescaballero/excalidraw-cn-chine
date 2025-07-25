@@ -2,10 +2,9 @@ import { deflate, inflate } from "pako";
 import { encryptData, decryptData } from "./encryption";
 
 // -----------------------------------------------------------------------------
-// byte (binary) strings
+// cadenas de bytes (binarias)
 // -----------------------------------------------------------------------------
-
-// fast, Buffer-compatible implem
+// implementación rápida, compatible con Buffer
 export const toByteString = (
   data: string | Uint8Array | ArrayBuffer,
 ): Promise<string> => {
@@ -50,7 +49,7 @@ export const stringToBase64 = async (str: string, isByteString = false) => {
   return isByteString ? window.btoa(str) : window.btoa(await toByteString(str));
 };
 
-// async to align with stringToBase64
+// asíncrono para alinear con stringToBase64
 export const base64ToString = async (base64: string, isByteString = false) => {
   return isByteString
     ? window.atob(base64)
@@ -58,15 +57,15 @@ export const base64ToString = async (base64: string, isByteString = false) => {
 };
 
 // -----------------------------------------------------------------------------
-// text encoding
+// codificación de texto
 // -----------------------------------------------------------------------------
 
 type EncodedData = {
   encoded: string;
   encoding: "bstring";
-  /** whether text is compressed (zlib) */
+  /** si el texto está comprimido (zlib) */
   compressed: boolean;
-  /** version for potential migration purposes */
+  /** versión para posibles propósitos de migración */
   version?: string;
 };
 
@@ -78,7 +77,7 @@ export const encode = async ({
   compress,
 }: {
   text: string;
-  /** defaults to `true`. If compression fails, falls back to bstring alone. */
+  /** por defecto es `true`. Si la compresión falla, usa solo bstring. */
   compress?: boolean;
 }): Promise<EncodedData> => {
   let deflated!: string;
@@ -102,7 +101,7 @@ export const decode = async (data: EncodedData): Promise<string> => {
 
   switch (data.encoding) {
     case "bstring":
-      // if compressed, do not double decode the bstring
+      // si está comprimido, no decodificar dos veces el bstring
       decoded = data.compressed
         ? data.encoded
         : await byteStringToString(data.encoded);
@@ -121,14 +120,14 @@ export const decode = async (data: EncodedData): Promise<string> => {
 };
 
 // -----------------------------------------------------------------------------
-// binary encoding
+// codificación binaria
 // -----------------------------------------------------------------------------
 
 type FileEncodingInfo = {
-  /* version 2 is the version we're shipping the initial image support with.
-    version 1 was a PR version that a lot of people were using anyway.
-    Thus, if there are issues we can check whether they're not using the
-    unoffic version */
+  /* la versión 2 es la versión con la que lanzamos el soporte inicial de imágenes.
+    la versión 1 fue una versión de PR que mucha gente estaba usando de todos modos.
+    Por lo tanto, si hay problemas, podemos verificar si no están usando la
+    versión oficial no oficial */
   version: 1 | 2;
   compression: "pako@1" | null;
   encryption: "AES-GCM" | null;
@@ -136,7 +135,7 @@ type FileEncodingInfo = {
 
 // -----------------------------------------------------------------------------
 const CONCAT_BUFFERS_VERSION = 1;
-/** how many bytes we use to encode how many bytes the next chunk has.
+/** cuántos bytes usamos para codificar cuántos bytes tiene el siguiente bloque.
  * Corresponds to DataView setter methods (setUint32, setUint16, etc).
  *
  * NOTE ! values must not be changed, which would be backwards incompatible !
@@ -208,7 +207,7 @@ const concatBuffers = (...buffers: Uint8Array[]) => {
 
   let cursor = 0;
 
-  // as the first chunk we'll encode the version for backwards compatibility
+  // como primer bloque codificaremos la versión para compatibilidad hacia atrás
   dataView(bufferView, VERSION_DATAVIEW_BYTES, cursor, CONCAT_BUFFERS_VERSION);
   cursor += VERSION_DATAVIEW_BYTES;
 
@@ -228,21 +227,21 @@ const concatBuffers = (...buffers: Uint8Array[]) => {
   return bufferView;
 };
 
-/** can only be used on buffers created via `concatBuffers()` */
+/** solo se puede usar en buffers creados vía `concatBuffers()` */
 const splitBuffers = (concatenatedBuffer: Uint8Array) => {
   const buffers = [];
 
   let cursor = 0;
 
-  // first chunk is the version
+  // el primer bloque es la versión
   const version = dataView(
     concatenatedBuffer,
     NEXT_CHUNK_SIZE_DATAVIEW_BYTES,
     cursor,
   );
-  // If version is outside of the supported versions, throw an error.
-  // This usually means the buffer wasn't encoded using this API, so we'd only
-  // waste compute.
+  // Si la versión está fuera de las soportadas, lanza un error.
+  // Esto usualmente significa que el buffer no fue codificado usando esta API, así que solo
+  // desperdiciaríamos cómputo.
   if (version > CONCAT_BUFFERS_VERSION) {
     throw new Error(`invalid version ${version}`);
   }
@@ -267,7 +266,7 @@ const splitBuffers = (concatenatedBuffer: Uint8Array) => {
   return buffers;
 };
 
-// helpers for (de)compressing data with JSON metadata including encryption
+// ayudantes para (des)comprimir datos con metadatos JSON incluyendo cifrado
 // -----------------------------------------------------------------------------
 
 /** @private */
@@ -352,7 +351,7 @@ export const decompressData = async <T extends Record<string, any>>(
   bufferView: Uint8Array,
   options: { decryptionKey: string },
 ) => {
-  // first chunk is encoding metadata (ignored for now)
+  // el primer bloque es metadatos de codificación (ignorado por ahora)
   const [encodingMetadataBuffer, iv, buffer] = splitBuffers(bufferView);
 
   const encodingMetadata: FileEncodingInfo = JSON.parse(
@@ -374,14 +373,14 @@ export const decompressData = async <T extends Record<string, any>>(
     ) as T;
 
     return {
-      /** metadata source is always JSON so we can decode it here */
+      /** la fuente de metadatos siempre es JSON así que podemos decodificarlo aquí */
       metadata,
-      /** data can be anything so the caller must decode it */
+      /** los datos pueden ser cualquier cosa así que quien llama debe decodificarlo */
       data: contentsBuffer,
     };
   } catch (error: any) {
     console.error(
-      `Error during decompressing and decrypting the file.`,
+      `Error durante la descomprimiendo y descifrando el archivo.`,
       encodingMetadata,
     );
     throw error;

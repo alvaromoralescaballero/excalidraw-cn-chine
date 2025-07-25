@@ -62,8 +62,8 @@ export const encryptData = async (
       ? await blobToArrayBuffer(data)
       : data;
 
-  // We use symmetric encryption. AES-GCM is the recommended algorithm and
-  // includes checks that the ciphertext has not been modified by an attacker.
+  // Usamos cifrado simétrico. AES-GCM es el algoritmo recomendado y
+  // incluye verificaciones de que el texto cifrado no ha sido modificado por un atacante.
   const encryptedBuffer = await window.crypto.subtle.encrypt(
     {
       name: "AES-GCM",

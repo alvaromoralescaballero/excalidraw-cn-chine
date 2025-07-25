@@ -101,8 +101,8 @@ export const exportCanvas = async (
       if (error.name === "CANVAS_POSSIBLY_TOO_BIG") {
         throw error;
       }
-      // TypeError *probably* suggests ClipboardItem not defined, which
-      // people on Firefox can enable through a flag, so let's tell them.
+      // TypeError *probablemente* sugiere que ClipboardItem no está definido, lo cual
+      // la gente en Firefox puede habilitar mediante una bandera, así que vamos a decírselo.
       if (isFirefox && error.name === "TypeError") {
         throw new Error(
           `${t("alerts.couldNotCopyToClipboard")}\n\n${t(
@@ -117,7 +117,7 @@ export const exportCanvas = async (
     }
   } else {
     tempCanvas.remove();
-    // shouldn't happen
+    // no debería pasar
     throw new Error("Unsupported export type");
   }
 };

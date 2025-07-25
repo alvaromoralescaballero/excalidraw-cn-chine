@@ -109,7 +109,7 @@ class History {
           appState.multiElement &&
           appState.multiElement.id === element.id
         ) {
-          // don't store multi-point arrow if still has only one point
+          // no guardar la flecha de múltiples puntos si todavía tiene solo un punto
           if (
             appState.multiElement &&
             appState.multiElement.id === element.id &&
@@ -120,7 +120,7 @@ class History {
 
           elements.push({
             ...element,
-            // don't store last point if not committed
+            // no guardar el último punto si no está confirmado
             points:
               element.lastCommittedPoint !==
               element.points[element.points.length - 1]
@@ -145,7 +145,7 @@ class History {
       return true;
     }
 
-    // loop from right to left as changes are likelier to happen on new elements
+    // recorrer de derecha a izquierda ya que es más probable que los cambios ocurran en los elementos nuevos
     for (let i = nextEntry.elements.length - 1; i > -1; i--) {
       const prev = nextEntry.elements[i];
       const next = lastEntry.elements[i];
@@ -159,7 +159,7 @@ class History {
       }
     }
 
-    // note: this is safe because entry's appState is guaranteed no excess props
+    // nota: esto es seguro porque entry's appState es garantizado no tener propiedades adicionales
     let key: keyof typeof nextEntry.appState;
     for (key in nextEntry.appState) {
       if (key === "editingLinearElement") {
@@ -192,7 +192,7 @@ class History {
 
       this.stateHistory.push(newEntryDehydrated);
       this.lastEntry = newEntry;
-      // As a new entry was pushed, we invalidate the redo stack
+      // Como se añadió una nueva entrada, invalidamos la pila de rehacer
       this.clearRedoStack();
     }
   }

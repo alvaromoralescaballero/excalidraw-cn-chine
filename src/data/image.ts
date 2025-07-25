@@ -8,6 +8,8 @@ import { blobToArrayBuffer } from "./blob";
 // -----------------------------------------------------------------------------
 // PNG
 // -----------------------------------------------------------------------------
+// insertar los metadatos antes del último bloque (iEND)
+// heredado, escena JSON sin codificar
 
 export const getTEXtChunk = async (
   blob: Blob,
@@ -71,6 +73,7 @@ export const decodePngMetadata = async (blob: Blob) => {
 // -----------------------------------------------------------------------------
 // SVG
 // -----------------------------------------------------------------------------
+// heredado, escena JSON sin codificar
 
 export const encodeSvgMetadata = async ({ text }: { text: string }) => {
   const base64 = await stringToBase64(

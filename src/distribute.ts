@@ -30,15 +30,14 @@ export const distributeElements = (
   const step = (bounds[extent] - span) / (groups.length - 1);
 
   if (step < 0) {
-    // If we have a negative step, we'll need to distribute from centers
-    // rather than from gaps. Buckle up, this is a weird one.
+    // Si tenemos un paso negativo, necesitaremos distribuir desde los centros
+    // en lugar de desde los espacios. Abróchate el cinturón, este es raro.
 
-    // Get indices of boxes that define start and end of our bounding box
+    // Obtener los índices de las cajas que definen el inicio y el final de nuestro cuadro delimitador
     const index0 = groups.findIndex((g) => g[1][start] === bounds[start]);
     const index1 = groups.findIndex((g) => g[1][end] === bounds[end]);
 
-    // Get our step, based on the distance between the center points of our
-    // start and end boxes
+    // Obtener nuestro paso, basado en la distancia entre los puntos centrales de nuestras cajas de inicio y fin
     const step =
       (groups[index1][1][mid] - groups[index0][1][mid]) / (groups.length - 1);
 
@@ -50,7 +49,7 @@ export const distributeElements = (
         y: 0,
       };
 
-      // Don't move our start and end boxes
+      // No mover nuestras cajas de inicio y fin
       if (index !== index0 && index !== index1) {
         pos += step;
         translation[distribution.axis] = pos - box[mid];
@@ -65,7 +64,7 @@ export const distributeElements = (
     });
   }
 
-  // Distribute from gaps
+  // Distribuir desde los espacios
 
   let pos = bounds[start];
 
